@@ -1,0 +1,7 @@
+# Normalizar saltos de línea
+* text=auto
+
+# Forzar LF en scripts shell y configs de Linux
+*.sh    text eol=lf
+*.conf  text eol=lf
+Dockerfile text eol=lf

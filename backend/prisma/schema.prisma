@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Farm {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  zones       Zone[]
+}
+
+model Zone {
+  id           String   @id @default(cuid())
+  farmId       String
+  farm         Farm     @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  name         String
+  haEntityId   String   // e.g. "switch.electrovalvula_zona_6"
+  color        String   @default("#4ade80")
+  // Posición en el plano 3D
+  posX         Float    @default(0)
+  posZ         Float    @default(0)
+  width        Float    @default(2)
+  depth        Float    @default(2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  irrigations  IrrigationEvent[]
+}
+
+model IrrigationEvent {
+  id         String    @id @default(cuid())
+  zoneId     String
+  zone       Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+  durationMs Int       // duración programada en ms
+  status     String    @default("running") // running | completed | cancelled | error
+  triggeredBy String   @default("manual")
+}
